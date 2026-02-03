@@ -123,6 +123,7 @@ main {
   background: #fff;
   display: grid;
   gap: 6px;
+  position: relative;
 }
 
 .event.sunday {
@@ -156,13 +157,16 @@ main {
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  padding: 3px 8px;
+  font-size: 11px;
+  padding: 2px 6px;
   border-radius: 999px;
   background: #f3efe8;
   color: var(--muted);
   border: 1px solid var(--border);
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  white-space: nowrap;
 }
 
 .legend {
@@ -207,6 +211,7 @@ main {
 }
 
 .comm-icon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
+  color: #b52424;
 }
