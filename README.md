@@ -1,22 +1,18 @@
-# Church Calendar Dashboard
+# MHCC Dashboard (Vite + Express)
 
-Production-ready internal dashboard that reads events from a Google Sheet and renders a two-column calendar view with per-user date range filtering. Designed for self-hosting (Hetzner + Coolify) and embedding via Squarespace iframe.
+A lightweight, production-ready internal church dashboard. The Express server serves a static Vite React UI and provides authenticated API routes for Google Sheets data. Designed for Docker images built in GitHub Actions and deployed via Coolify by pulling from GHCR.
 
 ## Sheet Schema (Tab: `Events`)
-Header columns must match exactly:
-- `Date` (YYYY-MM-DD) **required**
-- `Title` **required**
-- `EventType` **required** (`Sunday` or `Other`)
-- `SermonSeries` (optional)
-- `Speaker` (optional)
-- `StaffGone` (optional)
-- `SpecialNotes` (optional)
-
-The app is read-only; editing happens only in Google Sheets.
+Header columns must match **exactly** and in this order:
+1. `Date`
+2. `Title`
+3. `IsSunday`
+4. `Speaker`
+5. `StaffGone`
+6. `IsCommunion`
+7. `Notes`
 
 ## Environment Variables
-Create a `.env` file or set these in Coolify:
-
 ```
 GOOGLE_SHEETS_SPREADSHEET_ID=
 GOOGLE_SERVICE_ACCOUNT_EMAIL=
@@ -24,19 +20,19 @@ GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
 APP_PASSWORD=
 SESSION_SECRET=
 NODE_ENV=production
-APP_BASE_URL=
+PORT=3000
 ```
 
 Notes:
-- `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` must preserve newlines. If you copy from JSON, replace literal newlines with `\n`.
+- `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` must preserve newlines (replace newlines with `\n`).
 - `SESSION_SECRET` should be a long random string.
-- `APP_BASE_URL` is optional; if set, use your public URL.
+- `NODE_ENV=production` enables `SameSite=None; Secure` cookies for iframe use.
 
 ## Google Service Account Setup
 1. In Google Cloud Console, create a service account.
 2. Create a JSON key for it.
-3. Copy the `client_email` into `GOOGLE_SERVICE_ACCOUNT_EMAIL`.
-4. Copy the `private_key` into `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` (escape newlines as `\n`).
+3. Copy `client_email` into `GOOGLE_SERVICE_ACCOUNT_EMAIL`.
+4. Copy `private_key` into `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` (escape newlines as `\n`).
 5. Share the Google Sheet with the service account email (Viewer access).
 
 ## Local Development
@@ -45,21 +41,32 @@ npm install
 npm run dev
 ```
 
-## API
-- `GET /api/events?start=YYYY-MM-DD&end=YYYY-MM-DD`
-  - Returns `{ events: Event[] }`
-  - Filters by inclusive date range and sorts by date then title.
+The client runs on Vite’s dev server and the API runs on Express. In development, the client will call `/api/*` against the same host.
 
-## Deployment (Coolify)
-1. Create a new app in Coolify and connect the repo.
-2. Set the environment variables listed above.
-3. Use the provided `Dockerfile` (Coolify will build and run it).
-4. Expose port `3000`.
-5. Ensure HTTPS is enabled (required for iframe cookies with `SameSite=None`).
+## API Routes
+- `POST /api/login` → `{ password }` sets the session cookie.
+- `POST /api/logout` clears the cookie.
+- `GET /api/events?start=YYYY-MM-DD&end=YYYY-MM-DD` returns `{ events, etag }`.
 
-## Squarespace Embed Snippet
-Use an Embed block with something like:
+## Docker Build + Run (Local)
+```
+docker build -t mhcc-dashboard .
+docker run -p 3000:3000 --env-file .env mhcc-dashboard
+```
 
+## GitHub Actions → GHCR
+The workflow builds and publishes images on every push to `main`:
+- `ghcr.io/<owner>/<repo>:latest`
+- `ghcr.io/<owner>/<repo>:<sha>`
+
+## Coolify Deployment (Image from Registry)
+1. In Coolify, create a new app and choose **Docker Image from Registry**.
+2. Image: `ghcr.io/<owner>/<repo>:latest`.
+3. Expose port `3000`.
+4. Add environment variables listed above.
+5. Enable HTTPS (required for iframe cookies).
+
+## Squarespace Embed
 ```
 <iframe
   src="https://your-dashboard-domain.com"
@@ -71,9 +78,12 @@ Use an Embed block with something like:
 ></iframe>
 ```
 
-## Behavior Notes
-- Date range defaults to today through +30 days (America/New_York).
-- Range persists in URL params and localStorage per browser.
-- Polling refreshes every 60 seconds, plus a manual Refresh button.
-- Non-Sunday events are visually distinguished.
-- Cookies are `SameSite=None; Secure` in production to allow iframe usage.
+## Cookie Notes
+- Cookies are `httpOnly`, `SameSite=None`, and `Secure` in production.
+- This is required for third-party iframe contexts like Squarespace.
+
+## Project Structure
+- `server/` Express API + Google Sheets integration
+- `client/` Vite React UI
+- `Dockerfile` multi-stage build for server + client
+- `.github/workflows/` GH Actions for GHCR

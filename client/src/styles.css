@@ -1,34 +1,32 @@
 :root {
-  --bg: #f6f4ef;
+  --bg: #f5f2ed;
   --card: #ffffff;
-  --ink: #1c1c1c;
-  --muted: #5b5b5b;
-  --accent: #2b5d4d;
-  --other: #c97a2b;
-  --border: #e4dfd5;
+  --ink: #1b1b1b;
+  --muted: #6b6b6b;
+  --accent: #2f5d50;
+  --event: #b56a2f;
+  --border: #e2ddd2;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html,
 body {
-  padding: 0;
   margin: 0;
-  font-family: "Source Serif 4", "Iowan Old Style", "Palatino", serif;
-  background: var(--bg);
+  font-family: "Inter", system-ui, sans-serif;
+  background: linear-gradient(180deg, #f5f2ed 0%, #efeae2 100%);
   color: var(--ink);
+}
+
+h1, h2, h3 {
+  font-family: "Fraunces", serif;
+  margin: 0;
 }
 
 a {
   color: inherit;
   text-decoration: none;
-}
-
-button,
-input {
-  font-family: inherit;
 }
 
 main {
@@ -40,14 +38,13 @@ main {
 .header {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
   justify-content: space-between;
+  align-items: flex-end;
   gap: 16px;
   margin-bottom: 24px;
 }
 
 .header h1 {
-  margin: 0;
   font-size: 32px;
   letter-spacing: -0.02em;
 }
@@ -57,7 +54,7 @@ main {
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 18px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
 }
 
 .controls {
@@ -68,7 +65,7 @@ main {
 }
 
 .controls label {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted);
   display: flex;
   flex-direction: column;
@@ -76,24 +73,30 @@ main {
 }
 
 .controls input {
-  padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: 10px;
+  padding: 8px 10px;
   background: #fff;
 }
 
 .controls button {
-  padding: 9px 14px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--accent);
   color: #fff;
+  padding: 9px 14px;
   cursor: pointer;
 }
 
 .controls button.secondary {
   background: #fff;
   color: var(--accent);
+}
+
+.status {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
 }
 
 .layout {
@@ -108,41 +111,46 @@ main {
   }
 }
 
+.event-list {
+  display: grid;
+  gap: 12px;
+}
+
 .event {
-  padding: 14px;
-  border-radius: 14px;
   border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
   background: #fff;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 6px;
 }
 
+.event.sunday {
+  border-left: 6px solid var(--accent);
+}
+
 .event.other {
-  border-left: 6px solid var(--other);
-  background: #fff8ef;
+  border-left: 6px solid var(--event);
+  background: #fff6ec;
 }
 
 .event .date {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--accent);
 }
 
 .event .title {
   font-size: 18px;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .event .meta {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted);
-}
-
-.event .highlight {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--ink);
 }
 
 .badge {
@@ -157,6 +165,15 @@ main {
   border: 1px solid var(--border);
 }
 
+.legend {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .login {
   min-height: 100vh;
   display: grid;
@@ -166,10 +183,6 @@ main {
 
 .login .card {
   width: min(420px, 100%);
-}
-
-.login h1 {
-  margin: 0 0 12px;
 }
 
 .login form {
@@ -193,7 +206,7 @@ main {
   cursor: pointer;
 }
 
-.notice {
-  font-size: 13px;
-  color: var(--muted);
+.comm-icon {
+  width: 16px;
+  height: 16px;
 }

@@ -1,8 +1,10 @@
 import { FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function LoginPage() {
+export const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -15,7 +17,7 @@ export default function LoginPage() {
     });
 
     if (response.ok) {
-      window.location.href = "/";
+      navigate("/");
       return;
     }
 
@@ -27,7 +29,7 @@ export default function LoginPage() {
     <div className="login">
       <div className="card">
         <h1>Dashboard Login</h1>
-        <p className="notice">Enter the shared password to continue.</p>
+        <p className="status">Enter the shared password to continue.</p>
         <form onSubmit={handleSubmit}>
           <input
             type="password"
@@ -38,8 +40,8 @@ export default function LoginPage() {
           />
           <button type="submit">Sign in</button>
         </form>
-        {error ? <p className="notice">{error}</p> : null}
+        {error ? <p className="status">{error}</p> : null}
       </div>
     </div>
   );
-}
+};
