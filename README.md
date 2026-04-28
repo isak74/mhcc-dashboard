@@ -69,7 +69,7 @@ The workflow builds and publishes images on every push to `main`:
 ## Squarespace Embed
 ```
 <iframe
-  src="https://your-dashboard-domain.com/?display=tv"
+  src="https://your-dashboard-domain.com/?display=3"
   width="100%"
   height="1080"
   style="border: none; width: 100%; height: 100vh; min-height: 720px;"
@@ -80,7 +80,7 @@ The workflow builds and publishes images on every push to `main`:
 ></iframe>
 ```
 
-For a TV or kiosk display, prefer the direct dashboard URL with `?display=tv` when possible. If you embed it in Squarespace, the iframe must be allowed to enter fullscreen, and a short fixed height such as `900` can still force inner scrolling even when the TV has enough horizontal space.
+For a TV or kiosk display, prefer the direct dashboard URL with `?display=3` when possible. The display parameter can be `auto`, `1`, `2`, or `3`; fixed column modes still use the arrow controls when more columns are available offscreen. If you embed it in Squarespace, the iframe must be allowed to enter fullscreen, and a short fixed height such as `900` can still force inner scrolling even when the TV has enough horizontal space.
 
 ## Cookie Notes
 - Cookies are `httpOnly`, `SameSite=None`, and `Secure` in production.

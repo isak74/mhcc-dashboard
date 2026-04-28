@@ -43,11 +43,6 @@ a {
   padding: clamp(18px, 2vw, 32px) clamp(14px, 2.5vw, 40px) clamp(28px, 3vw, 56px);
 }
 
-.dashboard-tv {
-  min-height: 100svh;
-  padding: clamp(12px, 1.4vw, 24px);
-}
-
 .header {
   display: flex;
   flex-wrap: wrap;
@@ -277,41 +272,6 @@ a {
   width: 20px;
   height: 20px;
   color: #b52424;
-}
-
-.dashboard-tv .header {
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.dashboard-tv .legend {
-  margin-top: 8px;
-}
-
-.dashboard-tv .controls {
-  gap: 10px;
-}
-
-.dashboard-tv .column-rail {
-  --column-gap: 14px;
-}
-
-.dashboard-tv .event-list {
-  gap: 10px;
-}
-
-.dashboard-tv .event {
-  gap: 4px;
-  padding: 12px;
-}
-
-.dashboard-tv .event .title {
-  font-size: 17px;
-}
-
-.dashboard-tv .event .meta {
-  font-size: 12px;
 }
 
 @media (min-width: 1400px) {

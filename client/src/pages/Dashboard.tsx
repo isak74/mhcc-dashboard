@@ -10,10 +10,11 @@ import { CommunionIcon } from "../components/CommunionIcon";
 const RANGE_KEY = "mhcc-dashboard-range";
 const DISPLAY_KEY = "mhcc-dashboard-display";
 
-type DisplayMode = "auto" | "tv";
+type DisplayMode = "auto" | "1" | "2" | "3";
 
 const parseDisplayMode = (value: string | null): DisplayMode | null => {
-  if (value === "auto" || value === "tv") return value;
+  if (value === "tv") return "3";
+  if (value === "auto" || value === "1" || value === "2" || value === "3") return value;
   return null;
 };
 
@@ -27,9 +28,9 @@ const getInitialDisplayMode = (): DisplayMode => {
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-const getVisibleColumnCount = (width: number, displayMode: DisplayMode) => {
-  const gap = displayMode === "tv" ? 14 : 18;
-  const minColumnWidth = displayMode === "tv" ? 360 : 380;
+const getAutoColumnCount = (width: number) => {
+  const gap = 18;
+  const minColumnWidth = 380;
   const maxColumns = 4;
 
   if (width < 720) return 1;
@@ -37,9 +38,16 @@ const getVisibleColumnCount = (width: number, displayMode: DisplayMode) => {
   return clamp(Math.floor((width + gap) / (minColumnWidth + gap)), 1, maxColumns);
 };
 
-const getTargetEventsPerColumn = (height: number, displayMode: DisplayMode) => {
-  const reservedHeight = displayMode === "tv" ? 150 : 190;
-  const estimatedEventHeight = displayMode === "tv" ? 118 : 132;
+const getVisibleColumnCount = (width: number, displayMode: DisplayMode) => {
+  const autoColumns = getAutoColumnCount(width);
+  if (displayMode === "auto") return autoColumns;
+
+  return Math.min(autoColumns, Number(displayMode));
+};
+
+const getTargetEventsPerColumn = (height: number) => {
+  const reservedHeight = 190;
+  const estimatedEventHeight = 132;
   const availableHeight = Math.max(360, height - reservedHeight);
 
   return Math.max(3, Math.floor(availableHeight / estimatedEventHeight));
@@ -243,8 +251,8 @@ export const Dashboard = () => {
   );
 
   const targetEventsPerColumn = useMemo(
-    () => getTargetEventsPerColumn(viewportHeight, displayMode),
-    [displayMode, viewportHeight],
+    () => getTargetEventsPerColumn(viewportHeight),
+    [viewportHeight],
   );
 
   const columns = useMemo(() => {

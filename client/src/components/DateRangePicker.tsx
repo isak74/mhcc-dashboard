@@ -1,13 +1,15 @@
 import { ChangeEvent } from "react";
 
+type DisplayMode = "auto" | "1" | "2" | "3";
+
 type Props = {
   start: string;
   end: string;
   onChange: (next: { start: string; end: string }) => void;
   onRefresh: () => void;
   onLogout: () => void;
-  displayMode: "auto" | "tv";
-  onDisplayModeChange: (nextMode: "auto" | "tv") => void;
+  displayMode: DisplayMode;
+  onDisplayModeChange: (nextMode: DisplayMode) => void;
   onToggleFullscreen: () => void;
   isFullscreen: boolean;
   canFullscreen: boolean;
@@ -46,10 +48,12 @@ export const DateRangePicker = ({
         Display
         <select
           value={displayMode}
-          onChange={(event) => onDisplayModeChange(event.target.value as "auto" | "tv")}
+          onChange={(event) => onDisplayModeChange(event.target.value as DisplayMode)}
         >
           <option value="auto">Auto-fit</option>
-          <option value="tv">TV</option>
+          <option value="1">1 column</option>
+          <option value="2">2 column</option>
+          <option value="3">3 column</option>
         </select>
       </label>
       <button type="button" onClick={onRefresh}>Refresh</button>
