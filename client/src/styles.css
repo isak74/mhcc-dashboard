@@ -177,11 +177,13 @@ a {
 .event {
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 16px;
+  padding: 18px;
   background: #fff;
   display: grid;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 14px;
   position: relative;
+  align-items: start;
 }
 
 .event.sunday {
@@ -195,12 +197,20 @@ a {
 
 .event .date {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 17px;
   color: var(--accent);
+  line-height: 1.2;
+}
+
+.event-body {
+  display: grid;
+  gap: 8px;
+  grid-column: 1 / -1;
+  min-width: 0;
 }
 
 .event .title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -217,16 +227,68 @@ a {
 .badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   font-size: 12px;
   padding: 3px 7px;
   border-radius: 999px;
   background: #f3efe8;
   color: var(--muted);
   border: 1px solid var(--border);
-  position: absolute;
-  top: 10px;
-  right: 10px;
   white-space: nowrap;
+}
+
+.dashboard[data-visible-columns="1"] .event,
+.dashboard[data-visible-columns="2"] .event {
+  grid-template-columns: minmax(140px, 0.22fr) minmax(0, 1fr) auto;
+  gap: 10px 18px;
+  padding: 20px;
+}
+
+.dashboard[data-visible-columns="1"] .event .date,
+.dashboard[data-visible-columns="2"] .event .date {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  font-size: 19px;
+  padding-top: 3px;
+}
+
+.dashboard[data-visible-columns="1"] .event-body,
+.dashboard[data-visible-columns="2"] .event-body {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.dashboard[data-visible-columns="1"] .badge,
+.dashboard[data-visible-columns="2"] .badge {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.dashboard[data-visible-columns="1"] .event .title,
+.dashboard[data-visible-columns="2"] .event .title {
+  font-size: 28px;
+}
+
+.dashboard[data-visible-columns="1"] .event .meta,
+.dashboard[data-visible-columns="2"] .event .meta {
+  font-size: 17px;
+}
+
+.dashboard[data-visible-columns="1"] .event {
+  grid-template-columns: minmax(180px, 0.2fr) minmax(0, 1fr) auto;
+  padding: 24px;
+}
+
+.dashboard[data-visible-columns="1"] .event .date {
+  font-size: 21px;
+}
+
+.dashboard[data-visible-columns="1"] .event .title {
+  font-size: 34px;
+}
+
+.dashboard[data-visible-columns="1"] .event .meta {
+  font-size: 19px;
 }
 
 .legend {
@@ -319,6 +381,23 @@ a {
 
   .column-arrow-right {
     right: 4px;
+  }
+
+  .dashboard[data-visible-columns] .event {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+    padding: 16px;
+  }
+
+  .dashboard[data-visible-columns] .event .date,
+  .dashboard[data-visible-columns] .event-body,
+  .dashboard[data-visible-columns] .badge {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .dashboard[data-visible-columns] .event-body {
+    grid-column: 1 / -1;
   }
 
   .event .title {

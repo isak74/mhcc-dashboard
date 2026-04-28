@@ -47,7 +47,7 @@ const getVisibleColumnCount = (width: number, displayMode: DisplayMode) => {
 
 const getTargetEventsPerColumn = (height: number) => {
   const reservedHeight = 190;
-  const estimatedEventHeight = 158;
+  const estimatedEventHeight = 176;
   const availableHeight = Math.max(360, height - reservedHeight);
 
   return Math.max(3, Math.floor(availableHeight / estimatedEventHeight));
@@ -307,7 +307,11 @@ export const Dashboard = () => {
   }
 
   return (
-    <main className={`dashboard dashboard-${displayMode}`} data-display-mode={displayMode}>
+    <main
+      className={`dashboard dashboard-${displayMode}`}
+      data-display-mode={displayMode}
+      data-visible-columns={columnsInView}
+    >
       <div className="header">
         <div>
           <h1>Service + Event Dashboard</h1>
