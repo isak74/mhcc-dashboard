@@ -47,7 +47,7 @@ const getVisibleColumnCount = (width: number, displayMode: DisplayMode) => {
 
 const getTargetEventsPerColumn = (height: number) => {
   const reservedHeight = 190;
-  const estimatedEventHeight = 132;
+  const estimatedEventHeight = 158;
   const availableHeight = Math.max(360, height - reservedHeight);
 
   return Math.max(3, Math.floor(availableHeight / estimatedEventHeight));
@@ -104,8 +104,13 @@ export const Dashboard = () => {
     setRange(getDefaultRange());
   }, []);
 
-  const fetchEvents = async (nextRange: { start: string; end: string }) => {
-    setStatus("Loading events...");
+  const fetchEvents = async (
+    nextRange: { start: string; end: string },
+    options: { showStatus?: boolean } = {},
+  ) => {
+    const showStatus = options.showStatus ?? true;
+    if (showStatus) setStatus("Loading events...");
+
     try {
       const response = await fetch(`/api/events?start=${nextRange.start}&end=${nextRange.end}`);
       if (response.status === 401) {
@@ -113,7 +118,7 @@ export const Dashboard = () => {
         return;
       }
       if (!response.ok) {
-        setStatus("Failed to load events.");
+        if (showStatus) setStatus("Failed to load events.");
         return;
       }
       const data = (await response.json()) as { events: EventRecord[]; etag?: string };
@@ -122,9 +127,9 @@ export const Dashboard = () => {
         lastPayload.current = payload;
         setEvents(data.events);
       }
-      setStatus("");
+      if (showStatus) setStatus("");
     } catch {
-      setStatus("Failed to load events.");
+      if (showStatus) setStatus("Failed to load events.");
     }
   };
 
@@ -175,7 +180,7 @@ export const Dashboard = () => {
 
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(() => {
-      fetchEvents(range);
+      fetchEvents(range, { showStatus: false });
     }, 60000);
 
     return () => {
