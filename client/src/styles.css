@@ -180,8 +180,8 @@ a {
   padding: 18px;
   background: #fff;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px 14px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
   position: relative;
   align-items: start;
 }
@@ -202,10 +202,10 @@ a {
   line-height: 1.2;
 }
 
-.event-body {
+.event-primary,
+.event-details {
   display: grid;
   gap: 8px;
-  grid-column: 1 / -1;
   min-width: 0;
 }
 
@@ -218,7 +218,7 @@ a {
   line-height: 1.18;
 }
 
-.event .meta {
+.event-details {
   font-size: 15px;
   line-height: 1.35;
   color: var(--muted);
@@ -228,8 +228,12 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  min-width: 64px;
   font-size: 12px;
-  padding: 3px 7px;
+  padding: 4px 9px;
   border-radius: 999px;
   background: #f3efe8;
   color: var(--muted);
@@ -239,56 +243,54 @@ a {
 
 .dashboard[data-visible-columns="1"] .event,
 .dashboard[data-visible-columns="2"] .event {
-  grid-template-columns: minmax(140px, 0.22fr) minmax(0, 1fr) auto;
-  gap: 10px 18px;
-  padding: 20px;
+  grid-template-columns: minmax(0, 0.95fr) minmax(280px, 1fr);
+  gap: 14px clamp(24px, 4vw, 72px);
+  min-height: 178px;
+  padding: 24px clamp(28px, 4vw, 56px) 24px clamp(28px, 4vw, 56px);
+  align-items: center;
 }
 
 .dashboard[data-visible-columns="1"] .event .date,
 .dashboard[data-visible-columns="2"] .event .date {
-  grid-column: 1;
-  grid-row: 1 / span 2;
-  font-size: 19px;
-  padding-top: 3px;
+  font-size: clamp(30px, 3vw, 54px);
 }
 
-.dashboard[data-visible-columns="1"] .event-body,
-.dashboard[data-visible-columns="2"] .event-body {
+.dashboard[data-visible-columns="1"] .event-primary,
+.dashboard[data-visible-columns="2"] .event-primary {
+  grid-column: 1;
+  padding-right: 12px;
+}
+
+.dashboard[data-visible-columns="1"] .event-details,
+.dashboard[data-visible-columns="2"] .event-details {
   grid-column: 2;
-  grid-row: 1 / span 2;
+  align-content: center;
+  padding-top: 22px;
 }
 
 .dashboard[data-visible-columns="1"] .badge,
 .dashboard[data-visible-columns="2"] .badge {
-  grid-column: 3;
-  grid-row: 1;
+  min-width: clamp(128px, 14vw, 230px);
+  border-radius: 10px;
+  font-size: 14px;
+  padding: 8px 14px;
 }
 
 .dashboard[data-visible-columns="1"] .event .title,
 .dashboard[data-visible-columns="2"] .event .title {
-  font-size: 28px;
+  font-size: clamp(42px, 4.4vw, 76px);
+  line-height: 1.02;
 }
 
-.dashboard[data-visible-columns="1"] .event .meta,
-.dashboard[data-visible-columns="2"] .event .meta {
-  font-size: 17px;
+.dashboard[data-visible-columns="1"] .event-details,
+.dashboard[data-visible-columns="2"] .event-details {
+  font-size: clamp(28px, 2.7vw, 48px);
+  line-height: 1.18;
 }
 
 .dashboard[data-visible-columns="1"] .event {
-  grid-template-columns: minmax(180px, 0.2fr) minmax(0, 1fr) auto;
-  padding: 24px;
-}
-
-.dashboard[data-visible-columns="1"] .event .date {
-  font-size: 21px;
-}
-
-.dashboard[data-visible-columns="1"] .event .title {
-  font-size: 34px;
-}
-
-.dashboard[data-visible-columns="1"] .event .meta {
-  font-size: 19px;
+  grid-template-columns: minmax(0, 0.85fr) minmax(340px, 1fr);
+  min-height: 220px;
 }
 
 .legend {
@@ -387,24 +389,34 @@ a {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px 12px;
     padding: 16px;
+    min-height: 0;
   }
 
-  .dashboard[data-visible-columns] .event .date,
-  .dashboard[data-visible-columns] .event-body,
+  .dashboard[data-visible-columns] .event-primary,
+  .dashboard[data-visible-columns] .event-details,
   .dashboard[data-visible-columns] .badge {
     grid-column: auto;
     grid-row: auto;
   }
 
-  .dashboard[data-visible-columns] .event-body {
-    grid-column: 1 / -1;
+  .dashboard[data-visible-columns] .event-details {
+    padding-top: 0;
+    font-size: 14px;
+  }
+
+  .badge {
+    position: static;
+    min-width: 0;
+    border-radius: 999px;
+    font-size: 12px;
+    padding: 3px 7px;
   }
 
   .event .title {
     font-size: 20px;
   }
 
-  .event .meta {
+  .event-details {
     font-size: 14px;
   }
 }
