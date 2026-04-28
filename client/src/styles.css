@@ -243,16 +243,16 @@ a {
 
 .dashboard[data-visible-columns="1"] .event,
 .dashboard[data-visible-columns="2"] .event {
-  grid-template-columns: minmax(0, 0.95fr) minmax(280px, 1fr);
-  gap: 14px clamp(24px, 4vw, 72px);
-  min-height: 178px;
-  padding: 24px clamp(28px, 4vw, 56px) 24px clamp(28px, 4vw, 56px);
+  grid-template-columns: minmax(0, 0.95fr) minmax(260px, 1fr);
+  gap: 12px 32px;
+  min-height: 158px;
+  padding: 22px 28px;
   align-items: center;
 }
 
 .dashboard[data-visible-columns="1"] .event .date,
 .dashboard[data-visible-columns="2"] .event .date {
-  font-size: clamp(30px, 3vw, 54px);
+  font-size: 30px;
 }
 
 .dashboard[data-visible-columns="1"] .event-primary,
@@ -265,32 +265,52 @@ a {
 .dashboard[data-visible-columns="2"] .event-details {
   grid-column: 2;
   align-content: center;
-  padding-top: 22px;
+  padding-top: 18px;
 }
 
 .dashboard[data-visible-columns="1"] .badge,
 .dashboard[data-visible-columns="2"] .badge {
-  min-width: clamp(128px, 14vw, 230px);
+  min-width: 132px;
   border-radius: 10px;
-  font-size: 14px;
-  padding: 8px 14px;
+  font-size: 13px;
+  padding: 7px 12px;
 }
 
 .dashboard[data-visible-columns="1"] .event .title,
 .dashboard[data-visible-columns="2"] .event .title {
-  font-size: clamp(42px, 4.4vw, 76px);
-  line-height: 1.02;
+  font-size: 42px;
+  line-height: 1.06;
 }
 
 .dashboard[data-visible-columns="1"] .event-details,
 .dashboard[data-visible-columns="2"] .event-details {
-  font-size: clamp(28px, 2.7vw, 48px);
-  line-height: 1.18;
+  font-size: 28px;
+  line-height: 1.2;
 }
 
 .dashboard[data-visible-columns="1"] .event {
   grid-template-columns: minmax(0, 0.85fr) minmax(340px, 1fr);
-  min-height: 220px;
+  gap: 14px 48px;
+  min-height: 210px;
+  padding: 26px 42px;
+}
+
+.dashboard[data-visible-columns="1"] .event .date {
+  font-size: 42px;
+}
+
+.dashboard[data-visible-columns="1"] .event .title {
+  font-size: 62px;
+}
+
+.dashboard[data-visible-columns="1"] .event-details {
+  font-size: 38px;
+}
+
+.dashboard[data-visible-columns="1"] .badge {
+  min-width: 180px;
+  font-size: 15px;
+  padding: 9px 16px;
 }
 
 .legend {

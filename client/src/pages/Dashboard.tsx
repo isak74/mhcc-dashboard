@@ -47,7 +47,7 @@ const getVisibleColumnCount = (width: number, displayMode: DisplayMode) => {
 
 const getTargetEventsPerColumn = (height: number) => {
   const reservedHeight = 190;
-  const estimatedEventHeight = 176;
+  const estimatedEventHeight = 164;
   const availableHeight = Math.max(360, height - reservedHeight);
 
   return Math.max(3, Math.floor(availableHeight / estimatedEventHeight));
