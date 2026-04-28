@@ -6,11 +6,30 @@ type Props = {
   onChange: (next: { start: string; end: string }) => void;
   onRefresh: () => void;
   onLogout: () => void;
+  displayMode: "auto" | "tv";
+  onDisplayModeChange: (nextMode: "auto" | "tv") => void;
+  onToggleFullscreen: () => void;
+  isFullscreen: boolean;
+  canFullscreen: boolean;
 };
 
-export const DateRangePicker = ({ start, end, onChange, onRefresh, onLogout }: Props) => {
+export const DateRangePicker = ({
+  start,
+  end,
+  onChange,
+  onRefresh,
+  onLogout,
+  displayMode,
+  onDisplayModeChange,
+  onToggleFullscreen,
+  isFullscreen,
+  canFullscreen,
+}: Props) => {
   const handleChange = (key: "start" | "end") => (event: ChangeEvent<HTMLInputElement>) => {
-    onChange({ start: key === "start" ? event.target.value : start, end: key === "end" ? event.target.value : end });
+    onChange({
+      start: key === "start" ? event.target.value : start,
+      end: key === "end" ? event.target.value : end,
+    });
   };
 
   return (
@@ -23,7 +42,27 @@ export const DateRangePicker = ({ start, end, onChange, onRefresh, onLogout }: P
         End date
         <input type="date" value={end} onChange={handleChange("end")} />
       </label>
+      <label>
+        Display
+        <select
+          value={displayMode}
+          onChange={(event) => onDisplayModeChange(event.target.value as "auto" | "tv")}
+        >
+          <option value="auto">Auto-fit</option>
+          <option value="tv">TV</option>
+        </select>
+      </label>
       <button type="button" onClick={onRefresh}>Refresh</button>
+      <button
+        type="button"
+        className="secondary"
+        onClick={onToggleFullscreen}
+        disabled={!canFullscreen}
+        title={canFullscreen ? undefined : "Fullscreen requires iframe permission."}
+        aria-pressed={isFullscreen}
+      >
+        {isFullscreen ? "Exit full screen" : "Full screen"}
+      </button>
       <button type="button" className="secondary" onClick={onLogout}>Log out</button>
     </div>
   );

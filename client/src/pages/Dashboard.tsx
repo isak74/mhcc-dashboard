@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "../components/DateRangePicker";
 import { EventList } from "../components/EventList";
@@ -7,12 +8,65 @@ import { getDefaultRange, isValidDate } from "../utils/date";
 import { CommunionIcon } from "../components/CommunionIcon";
 
 const RANGE_KEY = "mhcc-dashboard-range";
+const DISPLAY_KEY = "mhcc-dashboard-display";
+
+type DisplayMode = "auto" | "tv";
+
+const parseDisplayMode = (value: string | null): DisplayMode | null => {
+  if (value === "auto" || value === "tv") return value;
+  return null;
+};
+
+const getInitialDisplayMode = (): DisplayMode => {
+  const params = new URLSearchParams(window.location.search);
+  const urlMode = parseDisplayMode(params.get("display"));
+  if (urlMode) return urlMode;
+
+  return parseDisplayMode(window.localStorage.getItem(DISPLAY_KEY)) ?? "auto";
+};
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+const getVisibleColumnCount = (width: number, displayMode: DisplayMode) => {
+  const gap = displayMode === "tv" ? 14 : 18;
+  const minColumnWidth = displayMode === "tv" ? 360 : 380;
+  const maxColumns = 4;
+
+  if (width < 720) return 1;
+
+  return clamp(Math.floor((width + gap) / (minColumnWidth + gap)), 1, maxColumns);
+};
+
+const getTargetEventsPerColumn = (height: number, displayMode: DisplayMode) => {
+  const reservedHeight = displayMode === "tv" ? 150 : 190;
+  const estimatedEventHeight = displayMode === "tv" ? 118 : 132;
+  const availableHeight = Math.max(360, height - reservedHeight);
+
+  return Math.max(3, Math.floor(availableHeight / estimatedEventHeight));
+};
+
+const splitEventsIntoColumns = (events: EventRecord[], columnCount: number) => {
+  if (events.length === 0) return [];
+
+  const chunkSize = Math.ceil(events.length / columnCount);
+  return Array.from({ length: columnCount }, (_, index) =>
+    events.slice(index * chunkSize, (index + 1) * chunkSize),
+  ).filter((column) => column.length > 0);
+};
 
 export const Dashboard = () => {
   const navigate = useNavigate();
   const [range, setRange] = useState<{ start: string; end: string } | null>(null);
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [status, setStatus] = useState("Loading events...");
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(getInitialDisplayMode);
+  const [layoutWidth, setLayoutWidth] = useState(window.innerWidth);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [isFullscreen, setIsFullscreen] = useState(Boolean(document.fullscreenElement));
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const layoutRef = useRef<HTMLDivElement | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
   const lastPayload = useRef<string>("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -67,9 +121,43 @@ export const Dashboard = () => {
   };
 
   useEffect(() => {
+    const handleResize = () => {
+      setLayoutWidth(layoutRef.current?.clientWidth ?? window.innerWidth);
+      setViewportHeight(window.innerHeight);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    if (!layoutRef.current || typeof ResizeObserver === "undefined") {
+      return () => window.removeEventListener("resize", handleResize);
+    }
+
+    const observer = new ResizeObserver(([entry]) => {
+      setLayoutWidth(entry.contentRect.width);
+      setViewportHeight(window.innerHeight);
+    });
+    observer.observe(layoutRef.current);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [events.length]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  useEffect(() => {
     if (!range) return;
 
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(window.location.search);
     params.set("start", range.start);
     params.set("end", range.end);
     window.history.replaceState({}, "", `/?${params.toString()}`);
@@ -96,21 +184,117 @@ export const Dashboard = () => {
     navigate("/login");
   };
 
+  const handleDisplayModeChange = (nextMode: DisplayMode) => {
+    setDisplayMode(nextMode);
+    window.localStorage.setItem(DISPLAY_KEY, nextMode);
+
+    const params = new URLSearchParams(window.location.search);
+    if (nextMode === "auto") {
+      params.delete("display");
+    } else {
+      params.set("display", nextMode);
+    }
+    window.history.replaceState({}, "", `/?${params.toString()}`);
+  };
+
+  const handleFullscreen = async () => {
+    if (!document.fullscreenEnabled) return;
+
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await document.documentElement.requestFullscreen();
+      }
+    } catch {
+      // Some iframe hosts block fullscreen even when the API exists.
+    }
+  };
+
+  const updateScrollButtons = useCallback(() => {
+    const rail = railRef.current;
+    if (!rail) {
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+
+    const maxScrollLeft = rail.scrollWidth - rail.clientWidth;
+    setCanScrollLeft(rail.scrollLeft > 2);
+    setCanScrollRight(rail.scrollLeft < maxScrollLeft - 2);
+  }, []);
+
+  const handleColumnScroll = (direction: -1 | 1) => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    const firstColumn = rail.querySelector<HTMLElement>(".event-list");
+    const styles = window.getComputedStyle(rail);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    const columnWidth = firstColumn?.getBoundingClientRect().width ?? rail.clientWidth;
+
+    rail.scrollBy({ left: direction * (columnWidth + gap), behavior: "smooth" });
+    window.setTimeout(updateScrollButtons, 350);
+  };
+
+  const visibleColumns = useMemo(
+    () => getVisibleColumnCount(layoutWidth, displayMode),
+    [displayMode, layoutWidth],
+  );
+
+  const targetEventsPerColumn = useMemo(
+    () => getTargetEventsPerColumn(viewportHeight, displayMode),
+    [displayMode, viewportHeight],
+  );
+
   const columns = useMemo(() => {
-    const mid = Math.ceil(events.length / 2);
-    return [events.slice(0, mid), events.slice(mid)];
-  }, [events]);
+    const totalColumns = Math.min(
+      events.length,
+      Math.max(visibleColumns, Math.ceil(events.length / targetEventsPerColumn)),
+    );
+    return splitEventsIntoColumns(events, totalColumns);
+  }, [events, targetEventsPerColumn, visibleColumns]);
+
+  const columnsInView = Math.max(1, Math.min(visibleColumns, columns.length));
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    rail.scrollTo({ left: 0 });
+    window.requestAnimationFrame(updateScrollButtons);
+  }, [columns.length, displayMode, updateScrollButtons, visibleColumns]);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    rail.addEventListener("scroll", updateScrollButtons, { passive: true });
+
+    const observer =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(() => updateScrollButtons());
+    observer?.observe(rail);
+
+    updateScrollButtons();
+
+    return () => {
+      rail.removeEventListener("scroll", updateScrollButtons);
+      observer?.disconnect();
+    };
+  }, [columns.length, updateScrollButtons]);
 
   if (!range) {
     return (
-      <main>
+      <main className="dashboard">
         <div className="card">Loading date range...</div>
       </main>
     );
   }
 
   return (
-    <main>
+    <main className={`dashboard dashboard-${displayMode}`} data-display-mode={displayMode}>
       <div className="header">
         <div>
           <h1>Service + Event Dashboard</h1>
@@ -124,15 +308,47 @@ export const Dashboard = () => {
           onChange={setRange}
           onRefresh={handleRefresh}
           onLogout={handleLogout}
+          displayMode={displayMode}
+          onDisplayModeChange={handleDisplayModeChange}
+          onToggleFullscreen={handleFullscreen}
+          isFullscreen={isFullscreen}
+          canFullscreen={document.fullscreenEnabled}
         />
       </div>
       {status ? <div className="status">{status}</div> : null}
       {events.length === 0 ? (
         <div className="card">No events in this range.</div>
       ) : (
-        <div className="layout">
-          <EventList events={columns[0]} />
-          <EventList events={columns[1]} />
+        <div className="column-frame" ref={layoutRef}>
+          {canScrollLeft ? (
+            <button
+              type="button"
+              className="column-arrow column-arrow-left"
+              aria-label="Show previous columns"
+              onClick={() => handleColumnScroll(-1)}
+            >
+              <span aria-hidden="true">&lt;</span>
+            </button>
+          ) : null}
+          <div
+            className="column-rail"
+            ref={railRef}
+            style={{ "--visible-columns": columnsInView } as CSSProperties}
+          >
+            {columns.map((column, index) => (
+              <EventList key={index} events={column} />
+            ))}
+          </div>
+          {canScrollRight ? (
+            <button
+              type="button"
+              className="column-arrow column-arrow-right"
+              aria-label="Show next columns"
+              onClick={() => handleColumnScroll(1)}
+            >
+              <span aria-hidden="true">&gt;</span>
+            </button>
+          ) : null}
         </div>
       )}
     </main>
