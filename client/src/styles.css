@@ -180,10 +180,8 @@ a {
   padding: 18px;
   background: #fff;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+  gap: 9px;
   position: relative;
-  align-items: start;
 }
 
 .event.sunday {
@@ -197,29 +195,21 @@ a {
 
 .event .date {
   font-weight: 600;
-  font-size: 17px;
+  font-size: 18px;
   color: var(--accent);
-  line-height: 1.2;
-}
-
-.event-primary,
-.event-details {
-  display: grid;
-  gap: 8px;
-  min-width: 0;
 }
 
 .event .title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
-  line-height: 1.18;
+  line-height: 1.12;
 }
 
-.event-details {
-  font-size: 15px;
+.event .meta {
+  font-size: 17px;
   line-height: 1.35;
   color: var(--muted);
 }
@@ -227,90 +217,52 @@ a {
 .badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  min-width: 64px;
   font-size: 12px;
-  padding: 4px 9px;
+  padding: 3px 7px;
   border-radius: 999px;
   background: #f3efe8;
   color: var(--muted);
   border: 1px solid var(--border);
+  position: absolute;
+  top: 10px;
+  right: 10px;
   white-space: nowrap;
 }
 
 .dashboard[data-visible-columns="1"] .event,
 .dashboard[data-visible-columns="2"] .event {
-  grid-template-columns: minmax(0, 0.95fr) minmax(260px, 1fr);
-  gap: 12px 32px;
-  min-height: 158px;
-  padding: 22px 28px;
-  align-items: center;
+  padding: 20px;
 }
 
 .dashboard[data-visible-columns="1"] .event .date,
 .dashboard[data-visible-columns="2"] .event .date {
-  font-size: 30px;
-}
-
-.dashboard[data-visible-columns="1"] .event-primary,
-.dashboard[data-visible-columns="2"] .event-primary {
-  grid-column: 1;
-  padding-right: 12px;
-}
-
-.dashboard[data-visible-columns="1"] .event-details,
-.dashboard[data-visible-columns="2"] .event-details {
-  grid-column: 2;
-  align-content: center;
-  padding-top: 18px;
-}
-
-.dashboard[data-visible-columns="1"] .badge,
-.dashboard[data-visible-columns="2"] .badge {
-  min-width: 132px;
-  border-radius: 10px;
-  font-size: 13px;
-  padding: 7px 12px;
+  font-size: 20px;
 }
 
 .dashboard[data-visible-columns="1"] .event .title,
 .dashboard[data-visible-columns="2"] .event .title {
-  font-size: 42px;
-  line-height: 1.06;
+  font-size: 30px;
 }
 
-.dashboard[data-visible-columns="1"] .event-details,
-.dashboard[data-visible-columns="2"] .event-details {
-  font-size: 28px;
-  line-height: 1.2;
+.dashboard[data-visible-columns="1"] .event .meta,
+.dashboard[data-visible-columns="2"] .event .meta {
+  font-size: 19px;
 }
 
 .dashboard[data-visible-columns="1"] .event {
-  grid-template-columns: minmax(0, 0.85fr) minmax(340px, 1fr);
-  gap: 14px 48px;
-  min-height: 210px;
-  padding: 26px 42px;
+  padding: 22px;
 }
 
 .dashboard[data-visible-columns="1"] .event .date {
-  font-size: 42px;
+  font-size: 22px;
 }
 
 .dashboard[data-visible-columns="1"] .event .title {
-  font-size: 62px;
+  font-size: 34px;
 }
 
-.dashboard[data-visible-columns="1"] .event-details {
-  font-size: 38px;
-}
-
-.dashboard[data-visible-columns="1"] .badge {
-  min-width: 180px;
-  font-size: 15px;
-  padding: 9px 16px;
+.dashboard[data-visible-columns="1"] .event .meta {
+  font-size: 20px;
 }
 
 .legend {
@@ -406,37 +358,19 @@ a {
   }
 
   .dashboard[data-visible-columns] .event {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px 12px;
     padding: 16px;
-    min-height: 0;
-  }
-
-  .dashboard[data-visible-columns] .event-primary,
-  .dashboard[data-visible-columns] .event-details,
-  .dashboard[data-visible-columns] .badge {
-    grid-column: auto;
-    grid-row: auto;
-  }
-
-  .dashboard[data-visible-columns] .event-details {
-    padding-top: 0;
-    font-size: 14px;
   }
 
   .badge {
-    position: static;
-    min-width: 0;
-    border-radius: 999px;
     font-size: 12px;
     padding: 3px 7px;
   }
 
   .event .title {
-    font-size: 20px;
+    font-size: 22px;
   }
 
-  .event-details {
-    font-size: 14px;
+  .event .meta {
+    font-size: 15px;
   }
 }

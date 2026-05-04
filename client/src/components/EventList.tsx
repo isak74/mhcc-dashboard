@@ -12,28 +12,24 @@ export const EventList = ({ events }: { events: EventRecord[] }) => {
           key={`${event.date}-${event.title}`}
           className={`event ${event.isSunday ? "sunday" : "other"}`}
         >
-          <div className="event-primary">
-            <div className="date">{formatDisplayDate(event.date)}</div>
-            <div className="title">
-              {event.isSunday && event.isCommunion ? <CommunionIcon /> : null}
-              {event.title}
-            </div>
-          </div>
-          <div className="event-details">
-            {event.speaker ? <div>Speaker: {event.speaker}</div> : null}
-            {event.staffGone || event.notes ? (
-              <div>
-                {event.staffGone ? `Staff gone: ${event.staffGone}` : null}
-                {event.staffGone && event.notes ? " · " : null}
-                {event.notes ? `Notes: ${event.notes}` : null}
-              </div>
-            ) : null}
+          <div className="date">{formatDisplayDate(event.date)}</div>
+          <div className="title">
+            {event.isSunday && event.isCommunion ? <CommunionIcon /> : null}
+            {event.title}
           </div>
           {event.isSunday ? (
             <span className="badge">Sunday</span>
           ) : (
             <span className="badge">Event</span>
           )}
+          {event.speaker ? <div className="meta">Speaker: {event.speaker}</div> : null}
+          {event.staffGone || event.notes ? (
+            <div className="meta">
+              {event.staffGone ? `Staff gone: ${event.staffGone}` : null}
+              {event.staffGone && event.notes ? " · " : null}
+              {event.notes ? `Notes: ${event.notes}` : null}
+            </div>
+          ) : null}
         </div>
       ))}
     </div>
